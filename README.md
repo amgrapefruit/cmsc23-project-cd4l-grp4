@@ -38,7 +38,7 @@ dart pub global activate flutterfire_cli
 
 In /my_app:
 ```bash
-flutterfire configure xxx
+flutterfire configure {project}
 ```
 
 No need to change any configurations and can just add all platforms.
