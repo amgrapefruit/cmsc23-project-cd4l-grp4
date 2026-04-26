@@ -10,7 +10,8 @@ Future<void> main() async {
   );
   runApp(MultiProvider(providers: [
     // TODO: create and add provider
-    ChangeNotifierProvider(create: (context) => null),
+    ChangeNotifierProvider(create: (context) => null), // food items provider
+    ChangeNotifierProvider(create: (context) => null), // user provider
   ], child: const MyApp()));
 
 }
