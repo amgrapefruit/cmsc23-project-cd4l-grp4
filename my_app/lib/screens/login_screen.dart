@@ -1,6 +1,8 @@
 // no logo, icons, design yet 
 
 import 'package:flutter/material.dart';
+import 'package:my_app/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'signup_screen.dart';
 //import api here, i did not import cause chineck ko lang iyong screen
 
@@ -158,6 +160,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text("Continue with Facebook"),
                     ),
                   ),
+
+                  /*For testing*/
+                  const SizedBox(height: 10),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        context.read<AuthProvider>().signOut();
+                      },
+                      child: const Text("Sign out"),
+                    ),
+                  ),
+                  /** */
 
                   const SizedBox(height: 20),
 

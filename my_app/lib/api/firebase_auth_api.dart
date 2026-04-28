@@ -29,7 +29,7 @@ class FirebaseAuthAPI {
       } else {
         return 'Failed with error ${e.code} - ${e.message}';
       }
-    }
+    } 
   }
 
   // signs up user using email and password
@@ -69,8 +69,10 @@ class FirebaseAuthAPI {
   // signs in with Google
   Future<String?> signInUsingGoogle() async {
     try {
+      await GoogleSignIn.instance.initialize();
+
       // Trigger the authentication flow
-      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
+      final googleUser = await GoogleSignIn.instance.authenticate();
 
       // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
@@ -88,16 +90,12 @@ class FirebaseAuthAPI {
 
       return null;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        return 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        return 'Wrong password provided for that user.';
-      } else if (e.code == 'invalid-credential') {
-        return 'Email or password do not match';
-      } else {
-        return 'Failed with error ${e.code} - ${e.message}';
-      }
-    } catch (e) {
+      return 'Failed with error ${e.code} - ${e.message}';
+    } on FirebaseException catch (e) {
+      return 'Failed with error ${e.code} - ${e.message}';
+    } on GoogleSignInException catch (e) {
+      return 'Failed with error ${e.code} - ${e.description}';
+    }  catch (e) {
       return 'Unsuccessful sign in';
     }
   }
@@ -126,15 +124,9 @@ class FirebaseAuthAPI {
       return 'Facebook sign in failed';
     }
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        return 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        return 'Wrong password provided for that user.';
-      } else if (e.code == 'invalid-credential') {
-        return 'Email or password do not match';
-      } else {
+      return 'Failed with error ${e.code} - ${e.message}';
+    } on FirebaseException catch (e) {
         return 'Failed with error ${e.code} - ${e.message}';
-      }
     } catch (e) {
       return 'Unsuccessful sign in';
     }

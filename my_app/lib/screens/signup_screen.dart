@@ -37,7 +37,7 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created')),
+          SnackBar(content: Text(error)),
         );
 
         return;
@@ -56,12 +56,46 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
 //insert call signin...
-  void googleSignup() {
-    print("google signup tapped");
+  void googleSignup() async {
+    
+    String? error = await context
+      .read<AuthProvider>()
+      .signInWithGoogle();
+
+    setState(() {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account created')),
+      );
+    });
   }
 
-  void fbSignup() {
-    print("fb signup tapped");
+  void fbSignup() async {
+    
+    String? error = await context
+      .read<AuthProvider>()
+      .signInWithFacebook();
+
+    setState(() {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account created')),
+      );
+    });
   }
 
   @override
@@ -192,6 +226,20 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: const Text("Continue with Facebook"),
                     ),
                   ),
+
+                  /*For testing*/
+                  const SizedBox(height: 10),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        context.read<AuthProvider>().signOut();
+                      },
+                      child: const Text("Sign out"),
+                    ),
+                  ),
+                  /** */
 
                   const SizedBox(height: 20),
 
