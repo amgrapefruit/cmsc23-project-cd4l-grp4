@@ -41,7 +41,7 @@ class FirebaseAuthAPI {
       );
 
       AppUser user = AppUser(name: name, email: email, uid: credential.user?.uid);
-      addUser(user.toMap());
+      addUser(user);
 
       return null;
 
@@ -84,7 +84,7 @@ class FirebaseAuthAPI {
       // get profile data and add user document
       AppUser user = AppUser(name: googleUser.displayName, email: googleUser.email, uid: firebaseCredential.user?.uid);
 
-      addUser(user.toMap());
+      addUser(user);
 
       return null;
     } on FirebaseAuthException catch (e) {
@@ -103,7 +103,7 @@ class FirebaseAuthAPI {
   }
 
   // sign in with Facebook
-  Future<String?> signInWithFacebook() async {
+  Future<String?> signInUsingFacebook() async {
     try {
     // Trigger the sign-in flow
     final LoginResult loginResult = await FacebookAuth.instance.login();
@@ -119,7 +119,7 @@ class FirebaseAuthAPI {
       final userData = await FacebookAuth.instance.getUserData();
       AppUser user = AppUser(name: userData['name'], email: userData['email'], uid: firebaseCredential.user?.uid);
 
-      addUser(user.toMap());
+      addUser(user);
 
       return null;
     } else {
@@ -151,9 +151,9 @@ class FirebaseAuthAPI {
   }
 
   // add user to firestore database
-  Future<String?> addUser(Map<String, dynamic> user) async {
+  Future<String?> addUser(AppUser user) async {
     try {
-      await db.collection('users').add(user);
+      await db.collection('users').doc(user.uid).set(user.toJson());
       return null;
     } on FirebaseException catch (e) {
       return "Failed with error '${e.code}: ${e.message}";

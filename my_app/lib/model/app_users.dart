@@ -27,11 +27,10 @@ class AppUser {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'name': name,
       'email': email,
-      'uid': uid,
       'isVerified': isVerified,
       'dietaryTags': dietaryTags,
     };

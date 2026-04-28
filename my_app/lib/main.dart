@@ -1,5 +1,5 @@
-//import 'package:firebase_core/firebase_core.dart';
-//import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 // commented some import so i can check the auth ui
 
 import 'package:flutter/material.dart';
@@ -14,12 +14,9 @@ import 'screens/signup_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Firebase is commented out for UI testing
-  /*
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  */
 
   runApp(MultiProvider(
     providers: [

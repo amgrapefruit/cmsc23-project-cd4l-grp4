@@ -1,8 +1,7 @@
 // no logo, icons, design yet 
-
-
 import 'package:flutter/material.dart';
-//import api
+import 'package:my_app/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 
 class SignupScreen extends StatefulWidget {
@@ -25,19 +24,35 @@ class _SignupScreenState extends State<SignupScreen> {
 
 
   //signup
-  void doSignup() {
+  void doSignup() async {
     if (!_form.currentState!.validate()) return;
 
-// call 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Account created')),
-    );
+    String? error = await context
+      .read<AuthProvider>()
+      .signUpWithEmailAndPassword(
+        email.text, 
+        pass.text, 
+        name.text);
 
-    //clear after
-    name.clear();
-    email.clear();
-    pass.clear();
-    confirm.clear();
+    setState(() {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account created')),
+        );
+
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account created')),
+      );
+
+      //clear text fields
+      name.clear();
+      email.clear();
+      pass.clear();
+      confirm.clear();
+    });
   }
 
 //insert call signin...

@@ -22,7 +22,7 @@ class AuthProvider with ChangeNotifier {
   }
   
   // sign up with email and password
-  Future<String?> signUp(String email, String password, String name) async {
+  Future<String?> signUpWithEmailAndPassword(String email, String password, String name) async {
     String? error = await authService.signUp(email, password, name);
     notifyListeners();
 
@@ -38,7 +38,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   // sign in with google
-  Future<String?> loginWithGoogle() async {
+  Future<String?> signInWithGoogle() async {
     String? error = await authService.signInUsingGoogle();
     notifyListeners();
 
@@ -46,8 +46,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   // sign in with Facebook
-  Future<String?> loginWithFacebook() async {
-    String? error = await authService.signInWithFacebook();
+  Future<String?> signInWithFacebook() async {
+    String? error = await authService.signInUsingFacebook();
     notifyListeners();
 
     return error;
