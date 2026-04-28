@@ -40,7 +40,7 @@ class FirebaseAuthAPI {
         password: password,
       );
 
-      AppUser user = AppUser(name: name, email: email);
+      AppUser user = AppUser(name: name, email: email, uid: credential.user?.uid);
       addUser(user.toMap());
 
       return null;
@@ -79,10 +79,10 @@ class FirebaseAuthAPI {
       final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
 
       // Once signed in, return the UserCredential
-      await auth.signInWithCredential(credential);
+      UserCredential firebaseCredential = await auth.signInWithCredential(credential);
 
       // get profile data and add user document
-      AppUser user = AppUser(name: googleUser.displayName, email: googleUser.email);
+      AppUser user = AppUser(name: googleUser.displayName, email: googleUser.email, uid: firebaseCredential.user?.uid);
 
       addUser(user.toMap());
 
@@ -113,11 +113,11 @@ class FirebaseAuthAPI {
       final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
 
       // sign to firebase auth and add user doc to firestore
-      await auth.signInWithCredential(facebookAuthCredential);
+      UserCredential firebaseCredential = await auth.signInWithCredential(facebookAuthCredential);
 
       // get profile data
       final userData = await FacebookAuth.instance.getUserData();
-      AppUser user = AppUser(name: userData['name'], email: userData['email']);
+      AppUser user = AppUser(name: userData['name'], email: userData['email'], uid: firebaseCredential.user?.uid);
 
       addUser(user.toMap());
 

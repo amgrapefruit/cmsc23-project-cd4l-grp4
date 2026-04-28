@@ -10,7 +10,7 @@ class AppUser {
   // constructor
   AppUser({
     required this.name,
-    this.uid,
+    required this.uid,
     required this.email,
     this.isVerified,
     this.dietaryTags,
