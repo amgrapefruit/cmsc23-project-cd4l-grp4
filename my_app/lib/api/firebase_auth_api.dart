@@ -8,6 +8,10 @@ class FirebaseAuthAPI {
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final FirebaseFirestore db = FirebaseFirestore.instance;
 
+  Stream<User?> getUser() {
+    return auth.authStateChanges();
+  }
+  
   // signs in user using email and password
   Future<String?> signInUsingEmailAndPassword(String email, String password) async {
     try {
@@ -65,24 +69,24 @@ class FirebaseAuthAPI {
   // signs in with Google
   Future<String?> signInUsingGoogle() async {
     try {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
+      // Trigger the authentication flow
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = googleUser!.authentication;
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
 
-    // Once signed in, return the UserCredential
-    await auth.signInWithCredential(credential);
+      // Once signed in, return the UserCredential
+      await auth.signInWithCredential(credential);
 
-    // get profile data and add user document
-    AppUser user = AppUser(name: googleUser.displayName, email: googleUser.email);
+      // get profile data and add user document
+      AppUser user = AppUser(name: googleUser.displayName, email: googleUser.email);
 
-    addUser(user.toMap());
+      addUser(user.toMap());
 
-    return null;
+      return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return 'No user found for that email.';
