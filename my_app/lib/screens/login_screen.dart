@@ -1,5 +1,3 @@
-// no logo, icons, design yet 
-
 import 'package:flutter/material.dart';
 import 'package:my_app/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +19,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final email = TextEditingController();
   final pass = TextEditingController();
 
+  // Branding colors
+  static const Color primaryGreen = Color(0xFF2C6B3F); 
+  static const Color primaryOrange = Color(0xFFE9743F); 
+  static const Color greyText = Colors.grey;
+
 //instantiate api here
 
   //login
@@ -29,12 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_form.currentState!.validate()) return;
 
 
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Login success')),
     );
 
-    //clear after
+
     email.clear();
     pass.clear();
   }
@@ -43,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void googleLogin() {
     
-    //insert call the sign in...
+   
     print("google login tapped");
   }
 
@@ -54,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -63,27 +66,26 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 60),
 
-                  const Text(
-                    "Welcome Back!",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  // Added our logo
+                  Image.asset(
+                    'lib/assets/logo.png',
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.contain,
                   ),
 
-                  const SizedBox(height: 10),
-
-                  const Text(
-                    "Good to see you again",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 50),
 
                   TextFormField(
                     controller: email,
                     decoration: const InputDecoration(
                       labelText: "Email",
                       border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: primaryGreen),
+                      ),
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return "Email required";
@@ -99,6 +101,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: const InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: primaryGreen),
+                      ),
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return "Password required";
@@ -112,7 +117,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         print("forgot password");
                       },
-                      child: const Text("Forgot password?"),
+                      child: const Text(
+                        "Forgot password?", 
+                        style: TextStyle(color: primaryOrange),
+                      ),
                     ),
                   ),
 
@@ -124,19 +132,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: doLogin,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: primaryGreen, 
                         foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       child: const Text("Login"),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
 
                   const Row(
                     children: [
                       Expanded(child: Divider()),
-                      Text("  OR  "),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text("OR", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      ),
                       Expanded(child: Divider()),
                     ],
                   ),
@@ -147,6 +160,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: googleLogin,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.black87,
+                        side: const BorderSide(color: Colors.black12),
+                      ),
                       child: const Text("Continue with Google"),
                     ),
                   ),
@@ -157,6 +174,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: fbLogin,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.black87,
+                        side: const BorderSide(color: Colors.black12),
+                      ),
                       child: const Text("Continue with Facebook"),
                     ),
                   ),
@@ -190,7 +211,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           );
                         },
-                        child: const Text("Sign up"),
+                        child: const Text(
+                          "Sign up",
+                          style: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
