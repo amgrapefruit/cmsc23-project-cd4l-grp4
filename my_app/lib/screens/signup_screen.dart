@@ -1,6 +1,3 @@
-// no logo, icons, design yet 
-
-
 import 'package:flutter/material.dart';
 //import api
 
@@ -21,6 +18,10 @@ class _SignupScreenState extends State<SignupScreen> {
   final pass = TextEditingController();
   final confirm = TextEditingController();
 
+  // Branding colors
+  static const Color primaryGreen = Color(0xFF2C6B3F);
+  static const Color primaryOrange = Color(0xFFE9743F);
+
 //insert api logic
 
 
@@ -40,7 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
     confirm.clear();
   }
 
-//insert call signin...
+
   void googleSignup() {
     print("google signup tapped");
   }
@@ -52,6 +53,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, 
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -61,27 +63,26 @@ class _SignupScreenState extends State<SignupScreen> {
               child: Column(
                 children: [
 
-                  const SizedBox(height: 30),
-
-                  const Text(
-                    "Create Account",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const Text(
-                    "Join our community today",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-
                   const SizedBox(height: 40),
+
+                  // Added our logo here
+                  Image.asset(
+                    'lib/assets/logo.png',
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  ),
+
+                  const SizedBox(height: 30),
 
                   TextFormField(
                     controller: name,
                     decoration: const InputDecoration(
                       labelText: "Full Name",
                       border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: primaryGreen),
+                      ),
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return "Name required";
@@ -96,6 +97,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     decoration: const InputDecoration(
                       labelText: "Email",
                       border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: primaryGreen),
+                      ),
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return "Email required";
@@ -111,6 +115,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     decoration: const InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: primaryGreen),
+                      ),
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return "Password required";
@@ -126,6 +133,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     decoration: const InputDecoration(
                       labelText: "Confirm Password",
                       border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: primaryGreen),
+                      ),
                     ),
                     validator: (v) {
                       if (v != pass.text) return "Passwords do not match";
@@ -133,7 +143,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
 
                   SizedBox(
                     width: double.infinity,
@@ -141,19 +151,24 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: ElevatedButton(
                       onPressed: doSignup,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: primaryGreen, 
                         foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       child: const Text("Sign Up"),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
 
                   const Row(
                     children: [
                       Expanded(child: Divider()),
-                      Text("  OR  "),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text("OR", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      ),
                       Expanded(child: Divider()),
                     ],
                   ),
@@ -164,6 +179,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: googleSignup,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.black87,
+                        side: const BorderSide(color: Colors.black12),
+                      ),
                       child: const Text("Continue with Google"),
                     ),
                   ),
@@ -174,6 +193,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: fbSignup,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.black87,
+                        side: const BorderSide(color: Colors.black12),
+                      ),
                       child: const Text("Continue with Facebook"),
                     ),
                   ),
@@ -188,7 +211,10 @@ class _SignupScreenState extends State<SignupScreen> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text("Login"),
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
