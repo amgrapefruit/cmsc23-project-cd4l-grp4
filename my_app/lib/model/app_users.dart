@@ -10,7 +10,7 @@ class AppUser {
   // constructor
   AppUser({
     required this.name,
-    this.uid,
+    required this.uid,
     required this.email,
     this.isVerified,
     this.dietaryTags,
@@ -27,11 +27,10 @@ class AppUser {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'name': name,
       'email': email,
-      'uid': uid,
       'isVerified': isVerified,
       'dietaryTags': dietaryTags,
     };

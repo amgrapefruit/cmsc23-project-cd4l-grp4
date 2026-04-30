@@ -8,6 +8,10 @@ class FirebaseAuthAPI {
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final FirebaseFirestore db = FirebaseFirestore.instance;
 
+  Stream<User?> getUser() {
+    return auth.authStateChanges();
+  }
+  
   // signs in user using email and password
   Future<String?> signInUsingEmailAndPassword(String email, String password) async {
     try {
@@ -25,7 +29,7 @@ class FirebaseAuthAPI {
       } else {
         return 'Failed with error ${e.code} - ${e.message}';
       }
-    }
+    } 
   }
 
   // signs up user using email and password
@@ -36,8 +40,8 @@ class FirebaseAuthAPI {
         password: password,
       );
 
-      AppUser user = AppUser(name: name, email: email);
-      addUser(user.toMap());
+      AppUser user = AppUser(name: name, email: email, uid: credential.user?.uid);
+      addUser(user);
 
       return null;
 
@@ -65,41 +69,39 @@ class FirebaseAuthAPI {
   // signs in with Google
   Future<String?> signInUsingGoogle() async {
     try {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
+      await GoogleSignIn.instance.initialize();
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = googleUser!.authentication;
+      // Trigger the authentication flow
+      final googleUser = await GoogleSignIn.instance.authenticate();
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
-    // Once signed in, return the UserCredential
-    await auth.signInWithCredential(credential);
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
 
-    // get profile data and add user document
-    AppUser user = AppUser(name: googleUser.displayName, email: googleUser.email);
+      // Once signed in, return the UserCredential
+      UserCredential firebaseCredential = await auth.signInWithCredential(credential);
 
-    addUser(user.toMap());
+      // get profile data and add user document
+      AppUser user = AppUser(name: googleUser.displayName, email: googleUser.email, uid: firebaseCredential.user?.uid);
 
-    return null;
+      addUser(user);
+
+      return null;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        return 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        return 'Wrong password provided for that user.';
-      } else if (e.code == 'invalid-credential') {
-        return 'Email or password do not match';
-      } else {
-        return 'Failed with error ${e.code} - ${e.message}';
-      }
-    } catch (e) {
+      return 'Failed with error ${e.code} - ${e.message}';
+    } on FirebaseException catch (e) {
+      return 'Failed with error ${e.code} - ${e.message}';
+    } on GoogleSignInException catch (e) {
+      return 'Failed with error ${e.code} - ${e.description}';
+    }  catch (e) {
       return 'Unsuccessful sign in';
     }
   }
 
   // sign in with Facebook
-  Future<String?> signInWithFacebook() async {
+  Future<String?> signInUsingFacebook() async {
     try {
     // Trigger the sign-in flow
     final LoginResult loginResult = await FacebookAuth.instance.login();
@@ -109,28 +111,22 @@ class FirebaseAuthAPI {
       final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
 
       // sign to firebase auth and add user doc to firestore
-      await auth.signInWithCredential(facebookAuthCredential);
+      UserCredential firebaseCredential = await auth.signInWithCredential(facebookAuthCredential);
 
       // get profile data
       final userData = await FacebookAuth.instance.getUserData();
-      AppUser user = AppUser(name: userData['name'], email: userData['email']);
+      AppUser user = AppUser(name: userData['name'], email: userData['email'], uid: firebaseCredential.user?.uid);
 
-      addUser(user.toMap());
+      addUser(user);
 
       return null;
     } else {
       return 'Facebook sign in failed';
     }
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        return 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        return 'Wrong password provided for that user.';
-      } else if (e.code == 'invalid-credential') {
-        return 'Email or password do not match';
-      } else {
+      return 'Failed with error ${e.code} - ${e.message}';
+    } on FirebaseException catch (e) {
         return 'Failed with error ${e.code} - ${e.message}';
-      }
     } catch (e) {
       return 'Unsuccessful sign in';
     }
@@ -147,9 +143,9 @@ class FirebaseAuthAPI {
   }
 
   // add user to firestore database
-  Future<String?> addUser(Map<String, dynamic> user) async {
+  Future<String?> addUser(AppUser user) async {
     try {
-      await db.collection('users').add(user);
+      await db.collection('users').doc(user.uid).set(user.toJson());
       return null;
     } on FirebaseException catch (e) {
       return "Failed with error '${e.code}: ${e.message}";

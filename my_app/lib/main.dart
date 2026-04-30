@@ -1,8 +1,9 @@
-//import 'package:firebase_core/firebase_core.dart';
-//import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 // commented some import so i can check the auth ui
 
 import 'package:flutter/material.dart';
+import 'package:my_app/provider/auth_provider.dart';
 import "package:provider/provider.dart";
 
 
@@ -13,18 +14,15 @@ import 'screens/signup_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Firebase is commented out for UI testing
-  /*
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  */
 
   runApp(MultiProvider(
     providers: [
       // TODO: create and add provider
       ChangeNotifierProvider(create: (context) => null), // food items provider
-      ChangeNotifierProvider(create: (context) => null), // user provider
+      ChangeNotifierProvider(create: (context) => AuthProvider()), // user provider
     ], 
     child: const MyApp()
   ));
@@ -43,10 +41,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
       ),
       initialRoute: '/login', // Set to login so it doesn't start at a blank root
-routes: {
+      routes: {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => SignupScreen(),
-       
       },
     );
   }
