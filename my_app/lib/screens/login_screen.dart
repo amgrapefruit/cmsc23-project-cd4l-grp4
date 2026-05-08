@@ -28,28 +28,54 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //login
   //for form checking if may laman
-  void doLogin() {
+  void doLogin() async {
     if (!_form.currentState!.validate()) return;
 
+    String? error = await context
+      .read<AuthProvider>()
+      .loginWithEmailAndPassword(email.text, pass.text);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login success')),
-    );
+    setState(() {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
 
+        return;
+      }
 
-    email.clear();
-    pass.clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account logged in')),
+        );
+
+      // clear text fields
+      email.clear();
+      pass.clear();
+    });
   }
 
+  void googleLogin() async {
 
+    String? error = await context
+      .read<AuthProvider>()
+      .signInWithGoogle();
 
-  void googleLogin() {
-    
-   
-    print("google login tapped");
+    setState(() {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account logged in')),
+      );
+    });
   }
 
-  void fbLogin() {
+  void fbLogin() async {
     print("fb login tapped");
   }
 
