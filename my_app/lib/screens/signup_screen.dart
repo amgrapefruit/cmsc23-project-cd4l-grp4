@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-//import api
+import 'package:my_app/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 
 class SignupScreen extends StatefulWidget {
@@ -26,28 +27,78 @@ class _SignupScreenState extends State<SignupScreen> {
 
 
   //signup
-  void doSignup() {
+  void doSignup() async {
     if (!_form.currentState!.validate()) return;
 
-// call 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Account created')),
-    );
+    String? error = await context
+      .read<AuthProvider>()
+      .signUpWithEmailAndPassword(
+        email.text, 
+        pass.text, 
+        name.text);
 
-    //clear after
-    name.clear();
-    email.clear();
-    pass.clear();
-    confirm.clear();
+    setState(() {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account created')),
+      );
+
+      //clear text fields
+      name.clear();
+      email.clear();
+      pass.clear();
+      confirm.clear();
+    });
   }
 
+//insert call signin...
+  void googleSignup() async {
+    
+    String? error = await context
+      .read<AuthProvider>()
+      .signInWithGoogle();
 
-  void googleSignup() {
-    print("google signup tapped");
+    setState(() {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account created')),
+      );
+    });
   }
 
-  void fbSignup() {
-    print("fb signup tapped");
+  void fbSignup() async {
+    
+    String? error = await context
+      .read<AuthProvider>()
+      .signInWithFacebook();
+
+    setState(() {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account created')),
+      );
+    });
   }
 
   @override
@@ -200,6 +251,20 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: const Text("Continue with Facebook"),
                     ),
                   ),
+
+                  /*For testing*/
+                  const SizedBox(height: 10),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        context.read<AuthProvider>().signOut();
+                      },
+                      child: const Text("Sign out"),
+                    ),
+                  ),
+                  /** */
 
                   const SizedBox(height: 20),
 

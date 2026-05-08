@@ -1,8 +1,9 @@
-//import 'package:firebase_core/firebase_core.dart';
-//import 'firebase_options.dart';
-// commented some import so i can check the ui
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+// commented some import so i can check the auth ui
 
 import 'package:flutter/material.dart';
+import 'package:my_app/provider/auth_provider.dart';
 import "package:provider/provider.dart";
 
 import 'screens/login_screen.dart';
@@ -20,17 +21,15 @@ class DummyUserProvider extends ChangeNotifier {}
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Firebase is commented out for UI testing
-  /*
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  */
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => DummyFoodItemsProvider()),
-      ChangeNotifierProvider(create: (context) => DummyUserProvider()),
+      // TODO: create and add provider
+      ChangeNotifierProvider(create: (context) => null), // food items provider
+      ChangeNotifierProvider(create: (context) => AuthProvider()), // user provider
     ], 
     child: const MyApp()
   ));
