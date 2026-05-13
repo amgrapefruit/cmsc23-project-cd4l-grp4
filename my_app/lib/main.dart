@@ -9,14 +9,14 @@ import "package:provider/provider.dart";
 
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
-
+import 'screens/interest_selection_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
   runApp(MultiProvider(
     providers: [
@@ -40,10 +40,11 @@ class MyApp extends StatelessWidget {
         // can be changed
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
       ),
-      initialRoute: '/login', // Set to login so it doesn't start at a blank root
+      initialRoute: '/interests', // Set to login so it doesn't start at a blank root
       routes: {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => SignupScreen(),
+        '/interests': (context) => InterestSelectionScreen(),
       },
     );
   }
