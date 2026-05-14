@@ -151,4 +151,36 @@ class FirebaseAuthAPI {
       return "Failed with error '${e.code}: ${e.message}";
     }
   }
+
+  // check user verification status
+  Future<String?> checkVerificationStatus(String uid) async {
+    try {
+      DocumentSnapshot doc = await db.collection('users').doc(uid).get();
+
+      if (doc.get('isVerified')) {
+        return null;
+      }
+      else {
+        return "User not yet verified";
+      }
+    } on FirebaseException catch (e) {
+      return ("Failed with error '${e.code}: ${e.message}");
+    }
+  }
+
+  // check if user tags, role preferences, and food interests status are complete
+  Future<String?> checkUserProfileComplete(String uid) async {
+    try {
+      DocumentSnapshot doc = await db.collection('users').doc(uid).get();
+
+      if (doc.get('dietaryTags').length > 0 && doc.get('foodInterests') && doc.get('rolePreference') != null) {
+        return null;
+      }
+      else {
+        return "Please fill up the incomplete details in your profile to continue";
+      }
+    } on FirebaseException catch (e) {
+      return ("Failed with error '${e.code}: ${e.message}");
+    }
+  }
 }

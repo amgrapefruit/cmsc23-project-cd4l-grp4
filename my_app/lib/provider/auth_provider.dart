@@ -57,4 +57,19 @@ class AuthProvider with ChangeNotifier {
     await authService.signOut();
     notifyListeners();
   }
+
+  // validate profile completion and verification status
+  Future<String?> validateProfile(String uid) async {
+    String? verificationError = await authService.checkVerificationStatus(uid);
+    if (verificationError != null) {
+      return verificationError;
+    }
+
+    String? profileError = await authService.checkUserProfileComplete(uid);
+    if (profileError != null) {
+      return profileError;
+    }
+
+    return null;
+  }
 }
