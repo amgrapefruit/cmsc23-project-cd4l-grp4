@@ -12,6 +12,12 @@ class VerificationScreen extends StatefulWidget {
 class _VerificationScreenState extends State<VerificationScreen> {
   final _form = GlobalKey<FormState>();
 
+  bool verify() {
+    // call api to verify picture here
+    print("verifying picture...");
+    return true; // return true if verified, false if not
+  }
+
   // Branding colors
   static const Color primaryGray = Color(0xFF2A312A);
 
@@ -114,6 +120,15 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         print("submitted picture to verify");
+                        if (verify()) {
+                          // navigate to dietary tags selection screen
+                          Navigator.pushNamed(context, '/interests');
+                        } else {
+                          // show error message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Verification failed. Please retake your selfie."))
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryGray,

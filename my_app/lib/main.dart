@@ -9,6 +9,7 @@ import 'screens/interest_selection_page.dart';
 import 'screens/landing_page.dart';
 import 'screens/main_screen.dart';
 import 'screens/home_screen.dart';
+import 'package:my_app/screens/verification_screen.dart';
 
 // providers
 import 'package:my_app/provider/auth_provider.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignupScreen(),
         '/main': (context) => const MainScreen(),
         '/home': (context) => const HomeScreen(),
+        '/verification': (context) => const VerificationScreen(),
       },
     );
   }

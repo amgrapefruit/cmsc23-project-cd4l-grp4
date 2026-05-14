@@ -31,32 +31,39 @@ class _SignupScreenState extends State<SignupScreen> {
   void doSignup() async {
     if (!_form.currentState!.validate()) return;
 
+    // account is created after verification and dietary tags
+    /** 
     String? error = await context
       .read<AuthProvider>()
       .signUpWithEmailAndPassword(
         email.text, 
         pass.text, 
         name.text);
+      */
 
     setState(() {
+      /*
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error)),
         );
 
         return;
-      }
+      }*/
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created')),
+        const SnackBar(content: Text('Please verify that you are a human')),
       );
 
-      //clear text fields
+      // clear text fields
       name.clear();
       email.clear();
       pass.clear();
       confirm.clear();
     });
+
+    // navigate to verification screen
+    // Navigator.pushNamed(context, '/verification');
   }
 
 //insert call signin...
@@ -203,12 +210,15 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         doSignup();
+
+                        // FOR TESTING PURPOSES ONLY
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => const VerificationScreen(),
                           ),
                         );
+                        // REMOVE ABOVE NAVIGATION CODE WHEN SIGNUP LOGIC IS IMPLEMENTED
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryGreen, 
