@@ -8,6 +8,7 @@ import "package:provider/provider.dart";
 
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
+import 'screens/interest_selection_page.dart';
 import 'screens/landing_page.dart';
 import 'screens/main_screen.dart';
 import 'screens/home_screen.dart';
@@ -21,9 +22,9 @@ class DummyUserProvider extends ChangeNotifier {}
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
   runApp(MultiProvider(
     providers: [
@@ -44,10 +45,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
       ),
-      initialRoute: '/main',   // Start in mainscreen
+      initialRoute: '/',   // Start in mainscreen
       routes: {
         '/': (context) => const LandingPage(),
         '/login': (context) => const LoginScreen(),
+        '/interests': (context) => const InterestSelectionScreen(),
         '/signup': (context) => const SignupScreen(),
         '/main': (context) => const MainScreen(),
        
