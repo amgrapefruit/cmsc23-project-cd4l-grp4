@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'verification_screen.dart';
+//import api here
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -200,7 +201,15 @@ class _SignupScreenState extends State<SignupScreen> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: doSignup,
+                      onPressed: () {
+                        doSignup();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const VerificationScreen(),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryGreen, 
                         foregroundColor: Colors.white,

@@ -6,10 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:my_app/provider/auth_provider.dart';
 import "package:provider/provider.dart";
 
-
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/interest_selection_page.dart';
+import 'screens/landing_page.dart';
+import 'screens/main_screen.dart';
+import 'screens/home_screen.dart';
+
+
+
+// Dummy providers (no Firebase yet)
+class DummyFoodItemsProvider extends ChangeNotifier {}
+class DummyUserProvider extends ChangeNotifier {}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,20 +39,20 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        // taken from Exer 8 and 9
-        // can be changed
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
       ),
-      initialRoute: '/interests', // Set to login so it doesn't start at a blank root
+      initialRoute: '/',   // Start in mainscreen
       routes: {
+        '/': (context) => const LandingPage(),
         '/login': (context) => const LoginScreen(),
-        '/signup': (context) => SignupScreen(),
-        '/interests': (context) => InterestSelectionScreen(),
+        '/interests': (context) => const InterestSelectionScreen(),
+        '/signup': (context) => const SignupScreen(),
+        '/main': (context) => const MainScreen(),
+       
       },
     );
   }
