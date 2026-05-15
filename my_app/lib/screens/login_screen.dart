@@ -36,17 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
       .loginWithEmailAndPassword(email.text, pass.text);
 
     setState(() {
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error)),
-        );
-
-        return;
-      }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account logged in')),
-        );
+      context.read<AuthProvider>().handleSignInError(context, error);
 
       // clear text fields
       email.clear();
@@ -61,17 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
       .signInWithGoogle();
 
     setState(() {
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error)),
-        );
-
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account logged in')),
-      );
+      context.read<AuthProvider>().handleSignInError(context, error);
     });
   }
 

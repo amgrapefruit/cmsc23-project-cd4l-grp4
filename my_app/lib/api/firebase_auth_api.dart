@@ -11,6 +11,8 @@ class FirebaseAuthAPI {
   Stream<User?> getUser() {
     return auth.authStateChanges();
   }
+
+  String? get currentUserId => auth.currentUser?.uid;
   
   // signs in user using email and password
   Future<String?> signInUsingEmailAndPassword(String email, String password) async {
@@ -51,12 +53,8 @@ class FirebaseAuthAPI {
       } else if (e.code == 'email-already-in-use') {
         return 'The account already exists for that email.';
       }
-      else if (e.code == 'unknown') {
-        return """Password may not meet the following requirements: 
-  - Password must contain at least 6 characters
-  - Password must contain an upper case character
-  - Password must contain a numeric character
-  - Password must contain a non-alphanumeric character""";
+      else if (e.code == 'account-exists-with-different-credential') {
+        return 'You used a different sign in method for this email. Please use the correct sign in method.';
       }
       else {
         return "Failed with error '${e.code}: ${e.message}'";
@@ -90,6 +88,9 @@ class FirebaseAuthAPI {
 
       return null;
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        return 'You used a different sign in method for this email. Please use the correct sign in method.';
+      }
       return 'Failed with error ${e.code} - ${e.message}';
     } on FirebaseException catch (e) {
       return 'Failed with error ${e.code} - ${e.message}';
@@ -124,6 +125,9 @@ class FirebaseAuthAPI {
       return 'Facebook sign in failed';
     }
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        return 'You used a different sign in method for this email. Please use the correct sign in method.';
+      }
       return 'Failed with error ${e.code} - ${e.message}';
     } on FirebaseException catch (e) {
         return 'Failed with error ${e.code} - ${e.message}';
