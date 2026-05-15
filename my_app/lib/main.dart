@@ -23,7 +23,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
   );
 
   runApp(MultiProvider(
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
       ),
-      initialRoute: '/',   // Start in mainscreen
+      initialRoute: '/home',   // Start in mainscreen
       routes: {
         '/': (context) => const LandingPage(),
         '/login': (context) => const LoginScreen(),

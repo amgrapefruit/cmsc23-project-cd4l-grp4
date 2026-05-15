@@ -271,20 +271,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
 
-                  /*For testing*/
-                  const SizedBox(height: 10),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        context.read<AuthProvider>().signOut();
-                      },
-                      child: const Text("Sign out"),
-                    ),
-                  ),
-                  /** */
-
                   const SizedBox(height: 20),
 
                   Row(
