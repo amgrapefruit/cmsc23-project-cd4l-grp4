@@ -8,6 +8,7 @@ class FoodItem {
   List<String>? tags;
   String? itemPic; //url
   DateTime? expirationDate;
+  String? pickupLocation;
   bool? isReserved = false;
   String? reservedBy; // uid of the user who reserved the item
 
@@ -18,6 +19,7 @@ class FoodItem {
     required this.quantity,
     required this.expirationDate,
     required this.owner,
+    required this.pickupLocation,
     this.requestedBy,
     this.itemPic,
     this.isReserved,
@@ -37,7 +39,8 @@ class FoodItem {
       isReserved: item['isReserved'],
       owner: item['owner'],
       reservedBy: item['reservedBy'],
-      tags: item['tags'],
+      tags: item['tags'], 
+      pickupLocation: item['pickupLocation'],
     );
   }
 
@@ -52,6 +55,7 @@ class FoodItem {
       'owner': owner,
       'reservedBy': reservedBy,
       'tags': tags,
+      'pickupLocation': pickupLocation,
     };
   }
 }
