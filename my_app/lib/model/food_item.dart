@@ -5,7 +5,8 @@ class FoodItem {
   String? owner; // uid of the user who added the item
   int? quantity;
   List<String>? requestedBy;
-  List<String>? tags;
+  List<String>? dietaryTags;
+  List<String>? foodTypeTags;
   String? itemPic; //url
   DateTime? expirationDate;
   String? pickupLocation;
@@ -24,7 +25,8 @@ class FoodItem {
     this.itemPic,
     this.isReserved,
     this.reservedBy,
-    this.tags,
+    this.dietaryTags,
+    this.foodTypeTags,
   });
 
   // factory constructors
@@ -39,7 +41,8 @@ class FoodItem {
       isReserved: item['isReserved'],
       owner: item['owner'],
       reservedBy: item['reservedBy'],
-      tags: item['tags'], 
+      dietaryTags: item['dietaryTags'],
+      foodTypeTags: item['foodTypeTags'],
       pickupLocation: item['pickupLocation'],
     );
   }
@@ -54,7 +57,8 @@ class FoodItem {
       'isReserved': isReserved,
       'owner': owner,
       'reservedBy': reservedBy,
-      'tags': tags,
+      'dietaryTags': dietaryTags,
+      'foodTypeTags': foodTypeTags,
       'pickupLocation': pickupLocation,
     };
   }
