@@ -1,13 +1,16 @@
+import 'dart:typed_data';
+
 class FoodItem {
   // attributes
   String? name;
   String? id;
   String? owner; // uid of the user who added the item
   int? quantity;
+  String? unit; // e.g. "lbs", "pieces", etc.
   List<String>? requestedBy;
   List<String>? dietaryTags;
   List<String>? foodTypeTags;
-  String? itemPic; //url
+  String? itemPicBase64; // base64
   DateTime? expirationDate;
   String? pickupLocation;
   bool? isReserved = false;
@@ -18,11 +21,12 @@ class FoodItem {
     required this.name,
     required this.id,
     required this.quantity,
+    required this.unit,
     required this.expirationDate,
     required this.owner,
     required this.pickupLocation,
     this.requestedBy,
-    this.itemPic,
+    this.itemPicBase64,
     this.isReserved,
     this.reservedBy,
     this.dietaryTags,
@@ -35,9 +39,10 @@ class FoodItem {
       name: item['name'],
       id: item['id'],
       quantity: item['quantity'],
+      unit: item['unit'],
       expirationDate: item['expirationDate'],
       requestedBy: item['requestedBy'],
-      itemPic: item['itemPic'],
+      itemPicBase64: item['itemPicBase64'],
       isReserved: item['isReserved'],
       owner: item['owner'],
       reservedBy: item['reservedBy'],
@@ -51,9 +56,10 @@ class FoodItem {
     return {
       'name': name,
       'quantity': quantity,
+      'unit': unit,
       'expirationDate': expirationDate,
       'requestedBy': requestedBy,
-      'itemPic': itemPic,
+      'itemPicBase64': itemPicBase64,
       'isReserved': isReserved,
       'owner': owner,
       'reservedBy': reservedBy,

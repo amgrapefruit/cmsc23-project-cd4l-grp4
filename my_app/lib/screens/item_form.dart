@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_app/constants/brand_colors.dart';
@@ -22,6 +24,8 @@ class _ItemFormState extends State<ItemForm> {
   // form fields
   Uint8List? itemPic; // handle photo upload later
   final item_name = TextEditingController();
+  final quantityController = TextEditingController();
+  final unitController = TextEditingController();
 
   int? quantity;
   DateTime? _selectedDate;
@@ -117,6 +121,7 @@ class _ItemFormState extends State<ItemForm> {
       'pickupLocation': selectedLocation,
       'dietaryTags': selectedDietaryTags,
       'foodTypeTags': selectedFoodTypeTags,
+      'itemPicBase64': base64Encode(itemPic!)
     });
 
     setState(() {
@@ -135,6 +140,9 @@ class _ItemFormState extends State<ItemForm> {
 
         // clear form
         item_name.clear();
+        quantityController.clear();
+        unitController.clear();
+        itemPic = null;
         selectedLocation = null;
         quantity = null;
         _selectedDate = null;
@@ -246,7 +254,7 @@ class _ItemFormState extends State<ItemForm> {
               children: [
                 // title header
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 46, 16, 12),
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -296,28 +304,31 @@ class _ItemFormState extends State<ItemForm> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: itemPic != null ?
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(8), // Remove this for a perfect square
-                                image: DecorationImage(
-                                  image: MemoryImage(itemPic!),
-                                  fit: BoxFit.cover,
+                        Expanded(
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
+                                      strokeWidth: 2,
+                                    ) // Shown if image is loading or missing
+                                  ),
+                                Center(
+                                  child: Container(
+                                    width: 340,
+                                    height: 340,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      image: DecorationImage(
+                                        image: MemoryImage(itemPic!),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    child: null,
+                                  )
                                 ),
-                              ),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ) // Shown if image is loading or missing
-                              ),
-                            )
-                          ],
+                              ],
+                            ),
                         ) :
                         Padding(
                           padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -438,51 +449,127 @@ class _ItemFormState extends State<ItemForm> {
 
                 if (_errorCaught && selectedFoodTypeTags.isEmpty) _buildErrorText('Please select at least 1 food type tag'),
 
-                // quantity label
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 6),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text('Quantity', 
-                        style: const TextStyle(
-                          fontSize: 16, 
-                          fontWeight: FontWeight.bold
-                        )
-                      ),
-                    ],
-                  )
-                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // quantity column fields
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // quantity label
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 24, 16, 6),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text('Quantity', 
+                                  style: const TextStyle(
+                                    fontSize: 16, 
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                              ],
+                            )
+                          ),
 
-                // quantity form field
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: _errorCaught && quantity == null || _errorCaught && quantity == 0 ? Colors.red : Colors.grey.shade300,
+                          // quantity form field
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: _errorCaught && quantity == null || _errorCaught && quantity == 0 ? Colors.red : Colors.grey.shade300,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: TextFormField(
+                                controller: quantityController,
+                                onChanged: (String v) {
+                                  // parse to int
+                                  quantity = int.parse(v);
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), // RegEx for decimal limit
+                                ],
+                                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: primaryGreen),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ),
+
+                          if (_errorCaught && quantity == null) _buildErrorText('Quantity is required'),
+
+                          if (_errorCaught && quantity != null && quantity! <= 0) _buildErrorText('Quantity must be greater than 0'),
+                        ],
                       ),
-                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child:TextFormField(
-                      onChanged: (String v) {
-                        // parse to int
-                        quantity = int.parse(v);
-                      },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: primaryGreen),
-                        ),
+
+                    // units column fields
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // units label
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 24, 16, 6),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text('Unit', 
+                                  style: const TextStyle(
+                                    fontSize: 16, 
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+
+                                SizedBox(width: 4,),
+
+                                Text('(eg: ml, g, pcs, etc.)',
+                                  style: const TextStyle(
+                                    fontSize: 12, 
+                                    color: Colors.grey
+                                  )
+                                ),  
+                              ],
+                            )
+                          ),
+
+                          // units form field
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: _errorCaught && unitController.text.isEmpty ? Colors.red : Colors.grey.shade300,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: TextFormField(
+                                controller: unitController,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: primaryGreen),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ),
+
+                          if (_errorCaught && unitController.text.isEmpty) _buildErrorText('Unit is required'),
+                        ],
                       ),
                     ),
-                  )
+                  ],
                 ),
-
-                if (_errorCaught && quantity == null) _buildErrorText('Quantity is required'),
-
-                if (_errorCaught && quantity != null && quantity! <= 0) _buildErrorText('Quantity must be greater than 0'),
 
                 // expiration date label
                 Padding(
@@ -564,7 +651,7 @@ class _ItemFormState extends State<ItemForm> {
 
                 // post button
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 6),
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
                   child: SizedBox(
                     width: double.infinity,
                     height: 50,
