@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:my_app/constants/brand_colors.dart';
 import 'package:my_app/constants/app_options.dart';
-import 'package:my_app/model/food_item.dart';
 import 'package:my_app/provider/food_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+
 
 class ItemForm extends StatefulWidget {
   const ItemForm({super.key});
@@ -18,7 +20,7 @@ class _ItemFormState extends State<ItemForm> {
   final _form = GlobalKey<FormState>();
 
   // form fields
-  String? itemPic; // handle photo upload later
+  Uint8List? itemPic; // handle photo upload later
   final item_name = TextEditingController();
 
   int? quantity;
@@ -74,7 +76,8 @@ class _ItemFormState extends State<ItemForm> {
   // handle submission function
   void handlePost(BuildContext context) async {
     // validate form fields
-    if (item_name.text.isEmpty || 
+    if (itemPic == null ||
+        item_name.text.isEmpty || 
         quantity == null || 
         _selectedDate == null || 
         selectedLocation == null ||
@@ -194,6 +197,7 @@ class _ItemFormState extends State<ItemForm> {
       children: [
         Container(
           decoration: BoxDecoration(
+            color: Colors.white,
             border: Border.all(
               color: showError ? Colors.red : Colors.grey.shade300,
             ),
@@ -268,10 +272,71 @@ class _ItemFormState extends State<ItemForm> {
                 ),
 
                 // item photo upload form here
-              
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () async {
+                        final img = await ImagePicker().pickImage(source: ImageSource.camera);
+                        if (img != null) {
+                          final bytes = await img.readAsBytes();
+                          setState(() {
+                            itemPic = bytes;
+                          });
+                        }
+                      },
+                      child: Container(
+                        height: 350,
+                        width: 350,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                            color: _errorCaught && itemPic == null ? Colors.red : Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: itemPic != null ?
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(8), // Remove this for a perfect square
+                                image: DecorationImage(
+                                  image: MemoryImage(itemPic!),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ) // Shown if image is loading or missing
+                              ),
+                            )
+                          ],
+                        ) :
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 70,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                if (_errorCaught && itemPic == null) _buildErrorText('Item photo is required'),
+
+
                 // item name label
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 6),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -290,6 +355,7 @@ class _ItemFormState extends State<ItemForm> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                   child: Container(
                     decoration: BoxDecoration(
+                      color: Colors.white,
                       border: Border.all(
                         color: _errorCaught && item_name.text.isEmpty ? Colors.red : Colors.grey.shade300,
                       ),
@@ -393,6 +459,7 @@ class _ItemFormState extends State<ItemForm> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                   child: Container(
                     decoration: BoxDecoration(
+                      color: Colors.white,
                       border: Border.all(
                         color: _errorCaught && quantity == null || _errorCaught && quantity == 0 ? Colors.red : Colors.grey.shade300,
                       ),
