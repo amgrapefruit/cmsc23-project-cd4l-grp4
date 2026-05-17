@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/constants/brand_colors.dart';
 import 'package:my_app/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'signup_screen.dart';
@@ -19,37 +20,38 @@ class _LoginScreenState extends State<LoginScreen> {
   final email = TextEditingController();
   final pass = TextEditingController();
 
-  // Branding colors
-  static const Color primaryGreen = Color(0xFF2C6B3F); 
-  static const Color primaryOrange = Color(0xFFE9743F); 
-  static const Color greyText = Colors.grey;
-
 //instantiate api here
 
   //login
   //for form checking if may laman
-  void doLogin() {
+  void doLogin() async {
     if (!_form.currentState!.validate()) return;
 
+    String? error = await context
+      .read<AuthProvider>()
+      .loginWithEmailAndPassword(email.text, pass.text);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login success')),
-    );
+    setState(() {
+      context.read<AuthProvider>().handleSignInError(context, error);
 
-
-    email.clear();
-    pass.clear();
+      // clear text fields
+      email.clear();
+      pass.clear();
+    });
   }
 
+  void googleLogin() async {
 
+    String? error = await context
+      .read<AuthProvider>()
+      .signInWithGoogle();
 
-  void googleLogin() {
-    
-   
-    print("google login tapped");
+    setState(() {
+      context.read<AuthProvider>().handleSignInError(context, error);
+    });
   }
 
-  void fbLogin() {
+  void fbLogin() async {
     print("fb login tapped");
   }
 

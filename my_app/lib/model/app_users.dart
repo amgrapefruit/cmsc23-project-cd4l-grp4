@@ -6,6 +6,8 @@ class AppUser {
   String? email;
   bool? isVerified = false;
   List<String>? dietaryTags = [];
+  List<String>? foodInterests = [];
+  String? rolePreference; // "To receive food" or "To give surplus food" or "Both"
 
   // constructor
   AppUser({
@@ -14,6 +16,8 @@ class AppUser {
     required this.email,
     this.isVerified,
     this.dietaryTags,
+    this.foodInterests,
+    this.rolePreference,
   });
   
   // factory constructors
@@ -24,6 +28,8 @@ class AppUser {
       uid: user['uid'],
       isVerified: user['isVerified'],
       dietaryTags: user['dietaryTags'],
+      foodInterests: user['foodInterests'],
+      rolePreference: user['rolePreference'],
     );
   }
 
@@ -33,6 +39,8 @@ class AppUser {
       'email': email,
       'isVerified': isVerified,
       'dietaryTags': dietaryTags,
+      'foodInterests': foodInterests,
+      'rolePreference': rolePreference,
     };
   }
 }

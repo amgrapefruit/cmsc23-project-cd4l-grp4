@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/constants/brand_colors.dart';
 import 'package:my_app/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'verification_screen.dart';
@@ -19,10 +20,6 @@ class _SignupScreenState extends State<SignupScreen> {
   final email = TextEditingController();
   final pass = TextEditingController();
   final confirm = TextEditingController();
-
-  // Branding colors
-  static const Color primaryGreen = Color(0xFF2C6B3F);
-  static const Color primaryOrange = Color(0xFFE9743F);
 
 //insert api logic
 

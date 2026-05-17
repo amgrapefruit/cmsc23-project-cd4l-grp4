@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_app/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/constants/app_options.dart';
+import 'package:my_app/constants/brand_colors.dart';
 
 class InterestSelectionScreen extends StatefulWidget {
   const InterestSelectionScreen({super.key});
@@ -11,9 +12,6 @@ class InterestSelectionScreen extends StatefulWidget {
 }
 
 class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
-
-  static const Color primaryGreen  = Color(0xFF2C6B3F);
-
   // selected state
   List<String> selectedDietaryTags = [];  // multi-select
   List<String> selectedFoodTypes = [];    // multi-select

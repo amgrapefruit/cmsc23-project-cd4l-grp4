@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/screens/item_form.dart';
 import 'package:provider/provider.dart';
 import '../provider/auth_provider.dart';
 import '../mock_data.dart';
@@ -27,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Widget> pages = [
       _buildHomeFeed(context, user),
       const Center(child: Text("Pantry Inventory")),
-      const Center(child: Text("Post Item")),
+      const ItemForm(),
       const Center(child: Text("Messages")),
       ProfileScreen(user: user),
     ];

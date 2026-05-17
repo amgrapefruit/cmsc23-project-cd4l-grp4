@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/screens/item_form.dart';
 import 'home_screen.dart';   
 
 class MainScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),       
     const Center(child: Text('Pantry - Not yet implemented')),
-    const Center(child: Text('Post Item - Not yet implemented')),
+    const ItemForm(),
     const Center(child: Text('Messages - Not yet implemented')),
     const Center(child: Text('Profile - Not yet implemented')),
   ];

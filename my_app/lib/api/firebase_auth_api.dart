@@ -11,6 +11,8 @@ class FirebaseAuthAPI {
   Stream<User?> getUser() {
     return auth.authStateChanges();
   }
+
+  String? get currentUserId => auth.currentUser?.uid;
   
   // signs in user using email and password
   Future<String?> signInUsingEmailAndPassword(String email, String password) async {
@@ -51,12 +53,8 @@ class FirebaseAuthAPI {
       } else if (e.code == 'email-already-in-use') {
         return 'The account already exists for that email.';
       }
-      else if (e.code == 'unknown') {
-        return """Password may not meet the following requirements: 
-  - Password must contain at least 6 characters
-  - Password must contain an upper case character
-  - Password must contain a numeric character
-  - Password must contain a non-alphanumeric character""";
+      else if (e.code == 'account-exists-with-different-credential') {
+        return 'You used a different sign in method for this email. Please use the correct sign in method.';
       }
       else {
         return "Failed with error '${e.code}: ${e.message}'";
@@ -90,6 +88,9 @@ class FirebaseAuthAPI {
 
       return null;
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        return 'You used a different sign in method for this email. Please use the correct sign in method.';
+      }
       return 'Failed with error ${e.code} - ${e.message}';
     } on FirebaseException catch (e) {
       return 'Failed with error ${e.code} - ${e.message}';
@@ -124,6 +125,9 @@ class FirebaseAuthAPI {
       return 'Facebook sign in failed';
     }
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        return 'You used a different sign in method for this email. Please use the correct sign in method.';
+      }
       return 'Failed with error ${e.code} - ${e.message}';
     } on FirebaseException catch (e) {
         return 'Failed with error ${e.code} - ${e.message}';
@@ -149,6 +153,38 @@ class FirebaseAuthAPI {
       return null;
     } on FirebaseException catch (e) {
       return "Failed with error '${e.code}: ${e.message}";
+    }
+  }
+
+  // check user verification status
+  Future<String?> checkVerificationStatus(String uid) async {
+    try {
+      DocumentSnapshot doc = await db.collection('users').doc(uid).get();
+
+      if (doc.get('isVerified')) {
+        return null;
+      }
+      else {
+        return "User not yet verified";
+      }
+    } on FirebaseException catch (e) {
+      return ("Failed with error '${e.code}: ${e.message}");
+    }
+  }
+
+  // check if user tags, role preferences, and food interests status are complete
+  Future<String?> checkUserProfileComplete(String uid) async {
+    try {
+      DocumentSnapshot doc = await db.collection('users').doc(uid).get();
+
+      if (doc.get('dietaryTags').length > 0 && doc.get('foodInterests') && doc.get('rolePreference') != null) {
+        return null;
+      }
+      else {
+        return "Please fill up the incomplete details in your profile to continue";
+      }
+    } on FirebaseException catch (e) {
+      return ("Failed with error '${e.code}: ${e.message}");
     }
   }
 }

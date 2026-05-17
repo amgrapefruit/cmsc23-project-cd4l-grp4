@@ -23,4 +23,12 @@ class FoodProvider with ChangeNotifier {
     
     notifyListeners();
   }
+
+  Future<String?> postFoodItem(Map<String, dynamic> foodItem) async {
+    String? error = await firebaseService.addFoodItemFromMap(foodItem);
+    if (error == null) {
+      fetchFoodItems(null);  // refresh food items
+    }
+    return error;
+  }
 }

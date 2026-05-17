@@ -7,7 +7,17 @@ class FirestoreFoodApi {
   // adds food item to the database
   Future<String?> addFoodItem(FoodItem foodItem) async {
     try {
-      await db.collection('food_items').doc(foodItem.id).set(foodItem.toJson());
+      await db.collection('food_items').add(foodItem.toJson());
+      return null;
+    } on FirebaseException catch (e) {
+      return 'Failed to add food item: $e';
+    }
+  }
+
+  // adds food item to the database using map
+  Future<String?> addFoodItemFromMap(Map<String, dynamic> foodItem) async {
+    try {
+      await db.collection('food_items').add(foodItem);
       return null;
     } on FirebaseException catch (e) {
       return 'Failed to add food item: $e';

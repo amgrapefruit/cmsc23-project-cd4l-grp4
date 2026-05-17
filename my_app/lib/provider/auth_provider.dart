@@ -34,6 +34,10 @@ class AuthProvider with ChangeNotifier {
     String? error = await authService.signInUsingEmailAndPassword(email, password);
     notifyListeners();
 
+    if (error == null) {
+      return validateProfile(authService.currentUserId!); 
+    }
+
     return error;
   }
 
@@ -41,6 +45,10 @@ class AuthProvider with ChangeNotifier {
   Future<String?> signInWithGoogle() async {
     String? error = await authService.signInUsingGoogle();
     notifyListeners();
+    
+    if (error == null) {
+      return validateProfile(authService.currentUserId!); 
+    }
 
     return error;
   }
@@ -50,11 +58,55 @@ class AuthProvider with ChangeNotifier {
     String? error = await authService.signInUsingFacebook();
     notifyListeners();
 
+    if (error == null) {
+      return validateProfile(authService.currentUserId!); 
+    }
+
     return error;
   }
   
   Future<void> signOut() async {
     await authService.signOut();
     notifyListeners();
+  }
+
+  // validate profile completion and verification status
+  Future<String?> validateProfile(String uid) async {
+    String? verificationError = await authService.checkVerificationStatus(uid);
+    if (verificationError != null) {
+      return verificationError;
+    }
+
+    String? profileError = await authService.checkUserProfileComplete(uid);
+    if (profileError != null) {
+      return profileError;
+    }
+
+    return null;
+  }
+
+  // push correct verification or interest selection screen based on profile completion and verification status
+  void handleSignInError(BuildContext context, String? error) {
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
+
+      if (error == 'Please fill up the incomplete details in your profile to continue') {
+        Navigator.pushNamed(context, '/interests');
+        return;
+      }
+
+      else if (error == 'User not yet verified') {
+        Navigator.pushNamed(context, '/verification');
+        return;
+      }
+
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Account logged in')),
+    );
   }
 }
