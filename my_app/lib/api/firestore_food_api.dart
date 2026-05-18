@@ -86,4 +86,14 @@ class FirestoreFoodApi {
   Future<DocumentSnapshot> getFoodItemById(String foodItemId) async {
     return await db.collection('food_items').doc(foodItemId).get();
   }
+
+  // get image from item id
+  Future<DocumentSnapshot> getItemPic(String foodItemId) async {
+    // get food item 
+    final foodItem = await getFoodItemById(foodItemId);
+
+    Map<String, dynamic> data = foodItem.data() as Map<String, dynamic>;
+    
+    return await db.collection('food_images').doc(data['itemPicBase64']).get();
+  }
 }

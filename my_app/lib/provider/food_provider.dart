@@ -31,4 +31,12 @@ class FoodProvider with ChangeNotifier {
     }
     return error;
   }
+
+  Future<String?> fetchItemPic(String foodItemId) async {
+    final docRef = await firebaseService.getItemPic(foodItemId);
+  
+    final docMap = docRef.data() as Map<String, dynamic>;
+
+    return docMap['bytes'];
+  }
 }
