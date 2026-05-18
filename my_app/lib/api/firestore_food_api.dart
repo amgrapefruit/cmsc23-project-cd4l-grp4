@@ -7,6 +7,12 @@ class FirestoreFoodApi {
   // adds food item to the database
   Future<String?> addFoodItem(FoodItem foodItem) async {
     try {
+      Map<String, String> imageMap = {'bytes': foodItem.toJson()['itemPicBase64']};
+      final imageRef = await db.collection('food_images').add(imageMap);
+
+      // change the base64 field to its docuID
+      foodItem.itemPicBase64 = imageRef.id;
+
       await db.collection('food_items').add(foodItem.toJson());
       return null;
     } on FirebaseException catch (e) {
@@ -17,6 +23,12 @@ class FirestoreFoodApi {
   // adds food item to the database using map
   Future<String?> addFoodItemFromMap(Map<String, dynamic> foodItem) async {
     try {
+      Map<String, String> imageMap = {'bytes': foodItem['itemPicBase64']};
+      final imageRef = await db.collection('food_images').add(imageMap);
+      
+      // change the base64 field to its docuID
+      foodItem['itemPicBase64'] = imageRef.id;
+
       await db.collection('food_items').add(foodItem);
       return null;
     } on FirebaseException catch (e) {
@@ -73,5 +85,15 @@ class FirestoreFoodApi {
   // get food item by id
   Future<DocumentSnapshot> getFoodItemById(String foodItemId) async {
     return await db.collection('food_items').doc(foodItemId).get();
+  }
+
+  // get image from item id
+  Future<DocumentSnapshot> getItemPic(String foodItemId) async {
+    // get food item 
+    final foodItem = await getFoodItemById(foodItemId);
+
+    Map<String, dynamic> data = foodItem.data() as Map<String, dynamic>;
+    
+    return await db.collection('food_images').doc(data['itemPicBase64']).get();
   }
 }

@@ -25,9 +25,9 @@ class _ItemFormState extends State<ItemForm> {
   Uint8List? itemPic; // handle photo upload later
   final item_name = TextEditingController();
   final quantityController = TextEditingController();
-  final unitController = TextEditingController();
 
   int? quantity;
+  String? _selectedUnit;
   DateTime? _selectedDate;
   
   List<String?> selectedDietaryTags = [];
@@ -35,7 +35,6 @@ class _ItemFormState extends State<ItemForm> {
   String? selectedLocation;
 
   bool _isLoading = false;
-  bool _submitted = false;
   bool _errorCaught = false;
 
   // toggle tags
@@ -82,7 +81,8 @@ class _ItemFormState extends State<ItemForm> {
     // validate form fields
     if (itemPic == null ||
         item_name.text.isEmpty || 
-        quantity == null || 
+        quantity == null ||
+        _selectedUnit == null || 
         _selectedDate == null || 
         selectedLocation == null ||
         selectedDietaryTags.isEmpty || 
@@ -121,13 +121,12 @@ class _ItemFormState extends State<ItemForm> {
       'pickupLocation': selectedLocation,
       'dietaryTags': selectedDietaryTags,
       'foodTypeTags': selectedFoodTypeTags,
-      // 'itemPicBase64': base64Encode(itemPic!)
-      // exceeds document size limit
+      'itemPicBase64': base64Encode(itemPic!),
+      'unit': _selectedUnit,
     });
 
     setState(() {
       _isLoading = false;
-      _submitted = true;
 
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -142,7 +141,7 @@ class _ItemFormState extends State<ItemForm> {
         // clear form
         item_name.clear();
         quantityController.clear();
-        unitController.clear();
+        _selectedUnit = null;
         itemPic = null;
         selectedLocation = null;
         quantity = null;
@@ -364,25 +363,25 @@ class _ItemFormState extends State<ItemForm> {
                     )
                   ),
 
-                  // item form field
+                  // item name form field
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: _errorCaught && item_name.text.isEmpty ? Colors.red : Colors.grey.shade300,
+                    child: TextFormField(
+                      controller: item_name,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: TextFormField(
-                        controller: item_name,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: primaryGreen),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: _errorCaught && quantity == null 
+                                  || _errorCaught && quantity != null && quantity! <= 0 ?
+                                  Colors.red : Colors.grey.shade300
                           ),
-                        ),
+                          borderRadius: BorderRadius.circular(8),
+                        )
                       ),
                     ),
                   ),
@@ -459,6 +458,7 @@ class _ItemFormState extends State<ItemForm> {
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // quantity label
                             Padding(
@@ -479,37 +479,42 @@ class _ItemFormState extends State<ItemForm> {
                             // quantity form field
                             Padding(
                               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: _errorCaught && quantity == null || _errorCaught && quantity == 0 ? Colors.red : Colors.grey.shade300,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
+                              child: TextFormField(
+                                style: TextStyle(
+
                                 ),
-                                child: TextFormField(
-                                  controller: quantityController,
-                                  onChanged: (String v) {
-                                    // parse to int
-                                    quantity = int.parse(v);
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), // RegEx for decimal limit
-                                  ],
-                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: primaryGreen),
-                                    ),
+                                controller: quantityController,
+                                onChanged: (String v) {
+                                  // parse to int
+                                  setState(() => quantity = int.parse(v));
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), // RegEx for decimal limit
+                                ],
+                                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _errorCaught && quantity == null 
+                                            || _errorCaught && quantity != null && quantity! <= 0 ?
+                                            Colors.red : Colors.grey.shade300
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  )
                                 ),
                               )
                             ),
 
-                            if (_errorCaught && quantity == null) _buildErrorText('Quantity is required'),
+                            if (_errorCaught && quantity == null) _buildErrorText('Quantity is required')
 
-                            if (_errorCaught && quantity != null && quantity! <= 0) _buildErrorText('Quantity must be greater than 0'),
+                            else if (_errorCaught && quantity != null && quantity! <= 0) _buildErrorText('Quantity must be greater than 0')
+
+                            else if (_errorCaught && _selectedUnit == null) _buildErrorText('')
                           ],
                         ),
                       ),
@@ -518,6 +523,7 @@ class _ItemFormState extends State<ItemForm> {
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // units label
                             Padding(
@@ -547,27 +553,18 @@ class _ItemFormState extends State<ItemForm> {
                             // units form field
                             Padding(
                               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: _errorCaught && unitController.text.isEmpty ? Colors.red : Colors.grey.shade300,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: TextFormField(
-                                  controller: unitController,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: primaryGreen),
-                                    ),
-                                  ),
-                                ),
+                              child: _buildDropdown(
+                                hint: 'Select unit', 
+                                items: ['ml', 'L', 'mg', 'g', 'kg', 'pieces'], 
+                                value: _selectedUnit, 
+                                onChanged: (v) => setState(() => _selectedUnit = v),
+                                showError: _errorCaught && _selectedUnit == null
                               )
                             ),
 
-                            if (_errorCaught && unitController.text.isEmpty) _buildErrorText('Unit is required'),
+                            if (_errorCaught && _selectedUnit == null) _buildErrorText('Unit is required')
+
+                            else if (_errorCaught && quantity == null || _errorCaught && quantity! <= 0) _buildErrorText('')
                           ],
                         ),
                       ),
@@ -642,11 +639,11 @@ class _ItemFormState extends State<ItemForm> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                     child: _buildDropdown(
-                    hint: 'Select Nearby Location',
-                    items: locationOptions,
-                    value: selectedLocation,
-                    onChanged: (val) => setState(() => selectedLocation = val),
-                    showError: _errorCaught && selectedLocation == null ? true : false,
+                      hint: 'Select Nearby Location',
+                      items: locationOptions,
+                      value: selectedLocation,
+                      onChanged: (val) => setState(() => selectedLocation = val),
+                      showError: _errorCaught && selectedLocation == null ? true : false,
                     ),
                   ),
 
