@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../provider/auth_provider.dart';
 import '../mock_data.dart';
 import 'profile_screen.dart';
+import 'item_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -133,71 +135,116 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // --- Uisng Mock Data
-          _buildHorizontalSection("Nearby Items", ["Rice", "Eggs", "Milk"]),
-          _buildHorizontalSection("Dietary Preference", List<String>.from(user["dietaryTags"] ?? [])),
-          _buildHorizontalSection("Food Interest", List<String>.from(user["foodInterests"] ?? [])),
-          
-          const SizedBox(height: 30),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHorizontalSection(String title, List<String> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const Text("See all", style: TextStyle(color: accentGold, fontSize: 13, fontWeight: FontWeight.w600)),
-            ],
+          // for "Available Items" section
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text('Available Items', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text("See all", style: TextStyle(color: accentGold, fontSize: 13, fontWeight: FontWeight.w600)),
+              ],
+            ),
           ),
-        ),
-        SizedBox(
-          height: 170,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: Container(
-                  width: 130,
-                  decoration: BoxDecoration(color: Colors.white, border: Border.all(color: cleanBorder)),
-                  child: Column(
-                    children: [
-                      Expanded(
+
+          // list updates every time an item is added or deleted
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('food_items')
+                //.where('isReserved', isEqualTo: false)
+                .snapshots(),
+            builder: (context, snapshot) {
+              // display progress indicator
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('No items available right now.', style: TextStyle(color: Colors.grey)),
+                );
+              }
+
+              final docs = snapshot.data!.docs;
+
+              // for horizontal scrolling list of items
+              return SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final data = docs[index].data() as Map<String, dynamic>;
+                    final docId = docs[index].id;
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ItemDetailsScreen(foodItemId: docId),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
                         child: Container(
-                          width: double.infinity,
-                          color: placeholderGrey,
-                          child: Icon(Icons.image_outlined, size: 28, color: Colors.grey.shade300),
+                          width: 130,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: cleanBorder)
+                          ),
+                          child: Column(
+                            children: [
+                              // display food photo if it exists
+                              Expanded(
+                                child: data['itemPic'] != null
+                                    ? Image.network(data['itemPic'],
+                                        width: double.infinity,
+                                        fit: BoxFit.cover)
+                                    : Container(
+                                        width: double.infinity,
+                                        color: placeholderGrey,
+                                        child: Icon(Icons.image_outlined,
+                                            size: 28,
+                                            color: Colors.grey.shade300),
+                                      ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(data['name'] ?? 'Item', 
+                                        style: const TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis),
+                                    const SizedBox(height: 2),
+                                    const Text("Available now", 
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ), 
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(items[index], style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                            const SizedBox(height: 2),
-                            const Text("Available now", style: TextStyle(fontSize: 10, color: Colors.grey)),
-                          ],
-                        ),
-                      ), 
-                    ],
-                  ),
+                      ),
+                    );
+                  },
                 ),
               );
             },
           ),
-        ),
-      ],
+          
+          const SizedBox(height: 30),
+        ],
+      ),
     );
   }
 

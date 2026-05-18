@@ -28,19 +28,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //login
   //for form checking if may laman
-  void doLogin() {
+  void doLogin() async {
+    // check if email and password fields are filled
     if (!_form.currentState!.validate()) return;
 
+    // call Firebase Authentication through the AuthProvider
+    String? errorMessage = await context
+        .read<AuthProvider>()
+        .loginWithEmailAndPassword(
+          email.text.trim(),
+          pass.text.trim(),
+        );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login success')),
-    );
-
-
-    email.clear();
-    pass.clear();
+    // If null, login was successful
+    if (errorMessage == null) {
+      email.clear();
+      pass.clear();
+      // go to home screen
+      if (mounted) Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      // show error from Firebase
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
+    }
   }
-
 
 
   void googleLogin() {

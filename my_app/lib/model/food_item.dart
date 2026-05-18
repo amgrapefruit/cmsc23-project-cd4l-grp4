@@ -10,6 +10,7 @@ class FoodItem {
   DateTime? expirationDate;
   bool? isReserved = false;
   String? reservedBy; // uid of the user who reserved the item
+  String? description; // for the short description provided by the user
 
   // constructor
   FoodItem({
@@ -23,6 +24,7 @@ class FoodItem {
     this.isReserved,
     this.reservedBy,
     this.tags,
+    this.description,
   });
 
   // factory constructors
@@ -38,6 +40,7 @@ class FoodItem {
       owner: item['owner'],
       reservedBy: item['reservedBy'],
       tags: item['tags'],
+      description: item['description'],
     );
   }
 
@@ -52,6 +55,7 @@ class FoodItem {
       'owner': owner,
       'reservedBy': reservedBy,
       'tags': tags,
+      'description': description,
     };
   }
 }

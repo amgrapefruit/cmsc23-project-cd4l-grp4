@@ -29,41 +29,43 @@ class _SignupScreenState extends State<SignupScreen> {
 
   //signup
   void doSignup() async {
+    // check if all fields are filled and valid
     if (!_form.currentState!.validate()) return;
 
-    // account is created after verification and dietary tags
-    /** 
+    // call Firebase to create the account
     String? error = await context
-      .read<AuthProvider>()
-      .signUpWithEmailAndPassword(
-        email.text, 
-        pass.text, 
-        name.text);
-      */
+        .read<AuthProvider>()
+        .signUpWithEmailAndPassword(
+          email.text.trim(),
+          pass.text.trim(),
+          name.text.trim(),
+        );
 
-    setState(() {
-      /*
-      if (error != null) {
+    if (error != null) {
+      // show error if signup failed e.g. email already in use
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error)),
         );
+      }
+      return;
+    }
 
-        return;
-      }*/
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please verify that you are a human')),
-      );
-
-      // clear text fields
-      name.clear();
-      email.clear();
-      pass.clear();
-      confirm.clear();
-    });
+    // clear fields after successful signup
+    name.clear();
+    email.clear();
+    pass.clear();
+    confirm.clear();
 
     // navigate to verification screen
-    // Navigator.pushNamed(context, '/verification');
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const VerificationScreen(),
+        ),
+      );
+    }
   }
 
 //insert call signin...
@@ -208,18 +210,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {
-                        doSignup();
-
-                        // FOR TESTING PURPOSES ONLY
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const VerificationScreen(),
-                          ),
-                        );
-                        // REMOVE ABOVE NAVIGATION CODE WHEN SIGNUP LOGIC IS IMPLEMENTED
-                      },
+                      onPressed: doSignup,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryGreen, 
                         foregroundColor: Colors.white,
