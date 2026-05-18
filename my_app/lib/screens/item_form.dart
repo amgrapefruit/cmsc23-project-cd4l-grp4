@@ -121,7 +121,7 @@ class _ItemFormState extends State<ItemForm> {
       'pickupLocation': selectedLocation,
       'dietaryTags': selectedDietaryTags,
       'foodTypeTags': selectedFoodTypeTags,
-      // 'itemPicBase64': base64Encode(itemPic!)
+      'itemPicBase64': base64Encode(itemPic!)
       // exceeds document size limit
     });
 

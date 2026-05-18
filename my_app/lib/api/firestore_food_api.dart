@@ -7,6 +7,12 @@ class FirestoreFoodApi {
   // adds food item to the database
   Future<String?> addFoodItem(FoodItem foodItem) async {
     try {
+      Map<String, String> imageMap = {'bytes': foodItem.toJson()['itemPicBase64']};
+      final imageRef = await db.collection('food_images').add(imageMap);
+
+      // change the base64 field to its docuID
+      foodItem.itemPicBase64 = imageRef.id;
+
       await db.collection('food_items').add(foodItem.toJson());
       return null;
     } on FirebaseException catch (e) {
@@ -17,6 +23,12 @@ class FirestoreFoodApi {
   // adds food item to the database using map
   Future<String?> addFoodItemFromMap(Map<String, dynamic> foodItem) async {
     try {
+      Map<String, String> imageMap = {'bytes': foodItem['itemPicBase64']};
+      final imageRef = await db.collection('food_images').add(imageMap);
+      
+      // change the base64 field to its docuID
+      foodItem['itemPicBase64'] = imageRef.id;
+
       await db.collection('food_items').add(foodItem);
       return null;
     } on FirebaseException catch (e) {

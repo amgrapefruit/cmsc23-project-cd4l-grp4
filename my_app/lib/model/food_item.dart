@@ -10,7 +10,7 @@ class FoodItem {
   List<String>? requestedBy;
   List<String>? dietaryTags;
   List<String>? foodTypeTags;
-  String? itemPicBase64; // base64
+  String? itemPicBase64; // foreign key
   DateTime? expirationDate;
   String? pickupLocation;
   bool? isReserved = false;
